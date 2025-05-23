@@ -5,7 +5,7 @@ import 'home_screen.dart';
 class LoginScreen extends StatelessWidget {
 
   final String correctUsername = 'abdullah';
-  final String correctPassword = '123';
+  final String correctPassword = '1234';
 
   @override
   Widget build(BuildContext context) {

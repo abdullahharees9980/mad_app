@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mad_app/screens/cart_page.dart';
+import 'package:mad_app/screens/profile_screen.dart';
 
-// Reusable Bottom Navigation Bar Widget
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
@@ -15,15 +15,21 @@ class BottomNavBar extends StatelessWidget {
       currentIndex: selectedIndex,
       onTap: (index) {
         if (index == 1) {
-          // When Cart is tapped, navigate to CartPage
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CartPage(cartItems: [],), // Ensure CartPage is imported
+              builder: (context) => CartPage(cartItems: []),
+            ),
+          );
+        } else if (index == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileScreen(),
             ),
           );
         } else {
-          onItemTapped(index); // Default navigation behavior
+          onItemTapped(index);
         }
       },
       items: const [

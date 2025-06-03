@@ -110,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               DropdownButtonFormField(
                 decoration: InputDecoration(labelText: "Country"),
                 value: country,
-                items: ["Malaysia", "Singapore", "Thailand"]
+                items: ["Malaysia", "Singapore", "Thailand","Sri Lanka","UAE","Qatar"]
                     .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                     .toList(),
                 onChanged: (val) => setState(() => country = val),

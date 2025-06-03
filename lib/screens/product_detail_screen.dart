@@ -1,5 +1,7 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
-import 'package:mad_app/widgets/bottom_navbar.dart'; 
+import 'package:mad_app/screens/cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String name;
@@ -7,7 +9,6 @@ class ProductDetailScreen extends StatefulWidget {
   final String price;
   final String description;
 
-  // Constructor to accept product details
   ProductDetailScreen({
     required this.name,
     required this.image,
@@ -37,12 +38,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _addToCart() {
-    print('Added ${widget.name} to cart with quantity: $_quantity');
-  }
+    CartPage.cartItems.add({
+      'name': widget.name,
+      'image': widget.image,
+      'price': widget.price,
+      'quantity': _quantity,
+    });
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Added to cart!')),
+    );
+  }
+// Land Scape
   @override
   Widget build(BuildContext context) {
-    // Landscape 
     double screenWidth = MediaQuery.of(context).size.width;
     bool isWide = screenWidth > 600;
 
@@ -57,78 +66,42 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: isWide ? 0 : 20),
-        Text(
-          widget.name,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
+        Text(widget.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         SizedBox(height: 10),
-        Text(
-          widget.price,
-          style: TextStyle(fontSize: 20, color: Colors.red),
-        ),
+        Text(widget.price, style: TextStyle(fontSize: 20, color: Colors.red)),
         SizedBox(height: 20),
-        Text(
-          widget.description,
-          style: TextStyle(fontSize: 16),
-        ),
+        Text(widget.description, style: TextStyle(fontSize: 16)),
         SizedBox(height: 20),
-        // Quantity Selector
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            IconButton(
-              icon: Icon(Icons.remove),
-              onPressed: _decrementQuantity,
-            ),
-            Text(
-              '$_quantity',
-              style: TextStyle(fontSize: 20),
-            ),
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: _incrementQuantity,
-            ),
+            IconButton(icon: Icon(Icons.remove), onPressed: _decrementQuantity),
+            Text('$_quantity', style: TextStyle(fontSize: 20)),
+            IconButton(icon: Icon(Icons.add), onPressed: _incrementQuantity),
           ],
         ),
         SizedBox(height: 20),
-        // Add to Cart Button
         ElevatedButton(
           onPressed: _addToCart,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.blue,
-            padding: EdgeInsets.symmetric(vertical: 15),
             minimumSize: Size(double.infinity, 50),
           ),
-          child: Text(
-            'Add to Cart',
-            style: TextStyle(fontSize: 18),
-          ),
+          child: Text('Add to Cart', style: TextStyle(fontSize: 18)),
         ),
       ],
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.name),
-        backgroundColor: Colors.blue,
-      ),
+      appBar: AppBar(title: Text(widget.name), backgroundColor: Colors.blue),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: isWide
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Left: product image (take half the width)
-                  Expanded(
-                    child: imageSection,
-                  ),
+                  Expanded(child: imageSection),
                   SizedBox(width: 20),
-                  // Right: product details
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: detailsSection,
-                    ),
-                  ),
+                  Expanded(child: SingleChildScrollView(child: detailsSection)),
                 ],
               )
             : Column(

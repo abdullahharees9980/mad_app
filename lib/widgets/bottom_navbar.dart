@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mad_app/screens/cart_page.dart';
+import 'package:mad_app/screens/cart_screen.dart';
 import 'package:mad_app/screens/profile_screen.dart';
+import 'package:mad_app/screens/about_us_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -17,19 +18,20 @@ class BottomNavBar extends StatelessWidget {
         if (index == 1) {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => CartPage(cartItems: []),
-            ),
+            MaterialPageRoute(builder: (context) => CartPage()),
           );
         } else if (index == 2) {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => ProfileScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => AboutScreen()), // ✅ About screen
+          );
+        } else if (index == 3) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
           );
         } else {
-          onItemTapped(index);
+          onItemTapped(index); // for Home
         }
       },
       items: const [
@@ -40,6 +42,10 @@ class BottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.shopping_cart),
           label: 'Cart',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.info),
+          label: 'About',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),

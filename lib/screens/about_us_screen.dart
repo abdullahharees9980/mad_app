@@ -22,7 +22,7 @@ class AboutScreen extends StatelessWidget {
             SizedBox(height: 10),
             Text('Created by: Abdullah Harees'),
             SizedBox(height: 10),
-            Text('This app was developed as part of a Mobile Application Development project.'),
+            Text('This app was developed as part of a Mobile Application Development assignment.'),
           ],
         ),
       ),

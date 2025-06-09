@@ -7,12 +7,7 @@ class CheckoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate total price
-    /*double totalPrice = 0;
-    for (var item in cartItems) {
-      totalPrice +=
-          double.parse(item['price'].replaceAll('Rs ', '')) * item['quantity'];
-    }*/
+    
 
     final TextEditingController _nameController = TextEditingController();
     final TextEditingController _addressController = TextEditingController();
@@ -67,10 +62,7 @@ class CheckoutScreen extends StatelessWidget {
               'Total Price:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-           /* Text(
-              'Rs $totalPrice',
-              style: TextStyle(fontSize: 16, color: Colors.red),
-            ),*/
+           
           ],
         ),
         SizedBox(height: 20),
@@ -82,7 +74,7 @@ class CheckoutScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Order Placed Successfully')),
               );
-              Navigator.pop(context);
+              
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Please fill in all fields')),

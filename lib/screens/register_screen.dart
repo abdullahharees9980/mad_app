@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mad_app/auth_service.dart';  
 import 'home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -8,48 +9,34 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController(); 
+  final emailController = TextEditingController();
+  final passController = TextEditingController();
+  final confirmPassController = TextEditingController();
 
-  final username = TextEditingController();
-  final email = TextEditingController();
-  final pass = TextEditingController();
-  final confirmPass = TextEditingController();
-
-  String? gender;
-  String? country;
-  bool agree = false;
-  DateTime? dob;
-
-  void pickDate() async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(2000),
-      firstDate: DateTime(1980),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        dob = picked;
-      });
-    }
-  }
-
-  void register() {
+  Future<void> _register() async {
     if (formKey.currentState!.validate()) {
-      if (pass.text != confirmPass.text) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Passwords not same")));
+      if (passController.text != confirmPassController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Passwords do not match")),
+        );
         return;
       }
-      if (!agree) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Please agree to terms")));
-        return;
+      try {
+        final token = await AuthService().register(
+          nameController.text,
+          emailController.text,
+          passController.text,
+          // role: 'user',  
+        );
+        if (token != null) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: $e')),
+        );
       }
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
     }
   }
 
@@ -64,79 +51,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             children: [
               TextFormField(
-                controller: username,
-                decoration: InputDecoration(labelText: "Username"),
-                validator: (v) => v!.isEmpty ? "Enter username" : null,
+                controller: nameController,
+                decoration: InputDecoration(labelText: "Name"),
+                validator: (v) => v!.isEmpty ? "Enter name" : null,
               ),
               TextFormField(
-                controller: email,
+                controller: emailController,
                 decoration: InputDecoration(labelText: "Email"),
                 validator: (v) => v!.isEmpty ? "Enter email" : null,
               ),
               TextFormField(
-                controller: pass,
+                controller: passController,
                 decoration: InputDecoration(labelText: "Password"),
                 obscureText: true,
                 validator: (v) => v!.isEmpty ? "Enter password" : null,
               ),
               TextFormField(
-                controller: confirmPass,
+                controller: confirmPassController,
                 decoration: InputDecoration(labelText: "Confirm Password"),
                 obscureText: true,
                 validator: (v) => v!.isEmpty ? "Confirm password" : null,
               ),
               SizedBox(height: 10),
-
-              // Gender radio
-              Row(
-                children: [
-                  Text("Gender: "),
-                  Radio(
-                    value: "Male",
-                    groupValue: gender,
-                    onChanged: (val) => setState(() => gender = val),
-                  ),
-                  Text("Male"),
-                  Radio(
-                    value: "Female",
-                    groupValue: gender,
-                    onChanged: (val) => setState(() => gender = val),
-                  ),
-                  Text("Female"),
-                ],
-              ),
-
-              // Country dropdown
-              DropdownButtonFormField(
-                decoration: InputDecoration(labelText: "Country"),
-                value: country,
-                items: ["Malaysia", "Singapore", "Thailand","Sri Lanka","UAE","Qatar"]
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
-                onChanged: (val) => setState(() => country = val),
-                validator: (val) => val == null ? "Choose country" : null,
-              ),
-
-              // Date of Birth
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(dob == null
-                      ? "Pick Date of Birth"
-                      : "DOB: ${dob!.day}/${dob!.month}/${dob!.year}"),
-                  TextButton(onPressed: pickDate, child: Text("Pick Date")),
-                ],
-              ),
-
-              // Agree checkbox
-              CheckboxListTile(
-                title: Text("I agree to terms"),
-                value: agree,
-                onChanged: (val) => setState(() => agree = val!),
-              ),
-
-              SizedBox(height: 10),
-              ElevatedButton(onPressed: register, child: Text("Register")),
+              ElevatedButton(onPressed: _register, child: Text("Register")),
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);

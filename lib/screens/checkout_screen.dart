@@ -61,10 +61,12 @@ class CheckoutScreen extends StatelessWidget {
             Text(
               'Total Price:',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              
             ),
            
           ],
         ),
+        
         SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
@@ -72,7 +74,8 @@ class CheckoutScreen extends StatelessWidget {
                 _addressController.text.isNotEmpty &&
                 _contactController.text.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Order Placed Successfully')),
+                SnackBar(content: Text('Order Placed Successfully')
+                ),
               );
               
             } else {
@@ -88,6 +91,7 @@ class CheckoutScreen extends StatelessWidget {
           child: Text(
             'Place Order',
             style: TextStyle(fontSize: 16),
+            
           ),
         ),
       ],

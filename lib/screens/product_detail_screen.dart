@@ -1,7 +1,10 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:mad_app/providers/app_provider.dart';
+import 'package:mad_app/providers/connectivity_provider.dart';
 import 'package:mad_app/screens/cart_screen.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String name;
@@ -38,35 +41,49 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _addToCart() {
-    CartPage.cartItems.add({
+    Provider.of<AppProvider>(context, listen: false).addToCart({
       'name': widget.name,
       'image': widget.image,
       'price': widget.price,
       'quantity': _quantity,
     });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Added to cart!')),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Added to cart!')));
   }
-// Land Scape
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isWide = screenWidth > 600;
 
-    Widget imageSection = Image.asset(
+    final isOnline = context.watch<ConnectivityProvider>().isOnline;
+
+    Widget imageSection = Image.network(
       widget.image,
       height: isWide ? null : 300,
       width: isWide ? null : double.infinity,
       fit: BoxFit.cover,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(
+          child: CircularProgressIndicator(
+            value: loadingProgress.expectedTotalBytes != null
+                ? loadingProgress.cumulativeBytesLoaded /
+                    (loadingProgress.expectedTotalBytes ?? 1)
+                : null,
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) =>
+          Icon(Icons.error, size: 100),
     );
 
     Widget detailsSection = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: isWide ? 0 : 20),
-        Text(widget.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        Text(widget.name,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         SizedBox(height: 10),
         Text(widget.price, style: TextStyle(fontSize: 20, color: Colors.red)),
         SizedBox(height: 20),
@@ -93,24 +110,46 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.name), backgroundColor: Colors.blue),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: isWide
-            ? Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: imageSection),
-                  SizedBox(width: 20),
-                  Expanded(child: SingleChildScrollView(child: detailsSection)),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  imageSection,
-                  detailsSection,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: isWide
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: imageSection),
+                      SizedBox(width: 20),
+                      Expanded(child: SingleChildScrollView(child: detailsSection)),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      imageSection,
+                      detailsSection,
+                    ],
+                  ),
+          ),
+
+          if (!isOnline)
+            Container(
+              color: Colors.black.withOpacity(0.7),
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.wifi_off, size: 80, color: Colors.white),
+                  SizedBox(height: 16),
+                  Text(
+                    'No Internet Connection',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
+            ),
+        ],
       ),
     );
   }

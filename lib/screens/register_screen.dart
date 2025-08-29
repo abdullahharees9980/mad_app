@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mad_app/auth_service.dart';  
 import 'home_screen.dart';
 
+
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();

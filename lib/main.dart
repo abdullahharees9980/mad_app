@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mad_app/providers/app_provider.dart';
-import 'package:mad_app/providers/connectivity_provider.dart'; // 👈 add this
+import 'package:mad_app/providers/connectivity_provider.dart'; 
 import 'package:mad_app/screens/login_screen.dart';
 import 'package:mad_app/screens/register_screen.dart';
 import 'package:mad_app/screens/home_screen.dart';
@@ -17,7 +17,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppProvider()),
-        ChangeNotifierProvider(create: (_) => ConnectivityProvider()), // 👈 added
+        ChangeNotifierProvider(create: (_) => ConnectivityProvider()), 
       ],
       child: MyApp(initialRoute: initialRoute),
     ),

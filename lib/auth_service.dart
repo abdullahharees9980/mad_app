@@ -80,7 +80,7 @@ Future<void> logout() async {
   }
 }
 
-// Get current user (example protected route)
+// Get current user 
 Future<Map<String, dynamic>?> getUser() async {
   final token = await _getToken();
   if (token == null) throw Exception('Not authenticated');

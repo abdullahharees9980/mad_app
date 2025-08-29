@@ -1,9 +1,6 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:mad_app/providers/app_provider.dart';
-import 'package:mad_app/providers/connectivity_provider.dart';
-import 'package:mad_app/screens/cart_screen.dart';
+import 'package:mad_app/widgets/offline_wrapper.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -26,19 +23,8 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _quantity = 1;
 
-  void _incrementQuantity() {
-    setState(() {
-      _quantity++;
-    });
-  }
-
-  void _decrementQuantity() {
-    setState(() {
-      if (_quantity > 1) {
-        _quantity--;
-      }
-    });
-  }
+  void _incrementQuantity() => setState(() => _quantity++);
+  void _decrementQuantity() => setState(() => _quantity = _quantity > 1 ? _quantity - 1 : 1);
 
   void _addToCart() {
     Provider.of<AppProvider>(context, listen: false).addToCart({
@@ -47,16 +33,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       'price': widget.price,
       'quantity': _quantity,
     });
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Added to cart!')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Added to cart!')),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isWide = screenWidth > 600;
-
-    final isOnline = context.watch<ConnectivityProvider>().isOnline;
 
     Widget imageSection = Image.network(
       widget.image,
@@ -68,22 +53,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         return Center(
           child: CircularProgressIndicator(
             value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                    (loadingProgress.expectedTotalBytes ?? 1)
+                ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
                 : null,
           ),
         );
       },
-      errorBuilder: (context, error, stackTrace) =>
-          Icon(Icons.error, size: 100),
+      errorBuilder: (context, error, stackTrace) => Icon(Icons.error, size: 100),
     );
 
     Widget detailsSection = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: isWide ? 0 : 20),
-        Text(widget.name,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        Text(widget.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         SizedBox(height: 10),
         Text(widget.price, style: TextStyle(fontSize: 20, color: Colors.red)),
         SizedBox(height: 20),
@@ -110,46 +92,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.name), backgroundColor: Colors.blue),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: isWide
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: imageSection),
-                      SizedBox(width: 20),
-                      Expanded(child: SingleChildScrollView(child: detailsSection)),
-                    ],
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      imageSection,
-                      detailsSection,
-                    ],
-                  ),
-          ),
-
-          if (!isOnline)
-            Container(
-              color: Colors.black.withOpacity(0.7),
-              alignment: Alignment.center,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.wifi_off, size: 80, color: Colors.white),
-                  SizedBox(height: 16),
-                  Text(
-                    'No Internet Connection',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-        ],
+      body: OfflineWrapper(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: isWide
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: imageSection),
+                    SizedBox(width: 20),
+                    Expanded(child: SingleChildScrollView(child: detailsSection)),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    imageSection,
+                    detailsSection,
+                  ],
+                ),
+        ),
       ),
     );
   }
